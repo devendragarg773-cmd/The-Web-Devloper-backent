@@ -63,20 +63,43 @@ function today() {
   return new Date().toLocaleDateString("en-IN");
 }
 
-function getSetting(key, fallback = "") {
-  const row = db.prepare(
-    "SELECT value FROM settings WHERE key = ?"
-  ).get(key);
+async function getSetting(key, fallback = "") {
+  const { data, error } = await supabase
+    .from("twd_settings")
+    .select("policy, banner")
+    .eq("id", "main")
+    .maybeSingle();
 
-  return row ? row.value : fallback;
+  if (error || !data) {
+    return fallback;
+  }
+
+  return data[key] ?? fallback;
 }
 
-function setSetting(key, value) {
-  db.prepare(`
-    INSERT INTO settings(key, value)
-    VALUES(?, ?)
-    ON CONFLICT(key) DO UPDATE SET value = excluded.value
-  `).run(key, value);
+async function setSetting(key, value) {
+  const { data, error } = await supabase
+    .from("twd_settings")
+    .select("id")
+    .eq("id", "main")
+    .maybeSingle();
+
+  if (error) {
+    throw error;
+  }
+
+  const payload = {
+    id: "main",
+    [key]: value
+  };
+
+  const result = await supabase
+    .from("twd_settings")
+    .upsert(payload, { onConflict: "id" });
+
+  if (result.error) {
+    throw result.error;
+  }
 }
 
 function rowToProject(row) {
