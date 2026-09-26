@@ -30,6 +30,12 @@ app.use(cors({
 
 app.use(express.json({ limit: "15mb" }));
 
+// ================= HOME =================
+
+app.get("/", (req, res) => {
+  res.send("Backend is running!");
+});
+
 db.exec(`
   CREATE TABLE IF NOT EXISTS projects (
     id TEXT PRIMARY KEY,
