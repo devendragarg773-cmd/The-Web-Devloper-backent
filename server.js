@@ -16,11 +16,18 @@ if (!OWNER_PASSWORD || !JWT_SECRET) {
   process.exit(1);
 }
 
-const dataDir = path.join(__dirname, "data");
-fs.mkdirSync(dataDir, { recursive: true });
+const SUPABASE_URL = process.env.SUPABASE_URL;
+const SUPABASE_SECRET_KEY = process.env.SUPABASE_SECRET_KEY;
 
-const db = new Database(path.join(dataDir, "twd.db"));
-db.pragma("journal_mode = WAL");
+if (!SUPABASE_URL || !SUPABASE_SECRET_KEY) {
+  console.error("Missing SUPABASE_URL or SUPABASE_SECRET_KEY.");
+  process.exit(1);
+}
+
+const supabase = createClient(
+  SUPABASE_URL,
+  SUPABASE_SECRET_KEY
+);
 
 app.use(cors({
   origin: process.env.FRONTEND_ORIGIN || "*"
