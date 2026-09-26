@@ -41,31 +41,6 @@ app.get("/", (req, res) => {
   res.send("Backend is running!");
 });
 
-db.exec(`
-  CREATE TABLE IF NOT EXISTS projects (
-    id TEXT PRIMARY KEY,
-    type TEXT NOT NULL CHECK(type IN ('real','demo')),
-    websiteName TEXT NOT NULL,
-    category TEXT NOT NULL,
-    price TEXT NOT NULL,
-    websiteURL TEXT,
-    customerName TEXT,
-    customerMobile TEXT,
-    description TEXT,
-    favorite INTEGER NOT NULL DEFAULT 0,
-    signature TEXT,
-    status TEXT NOT NULL,
-    date TEXT NOT NULL,
-    createdAt TEXT NOT NULL,
-    updatedAt TEXT NOT NULL
-  );
-
-  CREATE TABLE IF NOT EXISTS settings (
-    key TEXT PRIMARY KEY,
-    value TEXT
-  );
-`);
-
 function auth(req, res, next) {
   const header = req.headers.authorization || "";
   const token = header.startsWith("Bearer ")
